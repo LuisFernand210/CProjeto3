@@ -7,6 +7,15 @@ void inicializar_agenda(Agenda *agenda) {
     agenda->quantidade_contatos = 0;
 }
 
+int telefone_existe(Agenda *agenda, const char *telefone) {
+    for (int i = 0; i < agenda->quantidade_contatos; i++) {
+        if (strcmp(agenda->contatos[i].telefone, telefone) == 0) {
+            return 1; // Telefone já existe
+        }
+    }
+    return 0; // Telefone não existe
+}
+
 void adicionar_contato(Agenda *agenda) {
     if (agenda->quantidade_contatos >= MAX_CONTATOS) {
         printf("Nao e possivel adicionar mais contatos. Agenda cheia.\n");
@@ -23,6 +32,11 @@ void adicionar_contato(Agenda *agenda) {
     printf("Telefone: ");
     scanf("%s", novo_contato.telefone);
 
+    if (telefone_existe(agenda, novo_contato.telefone)) {
+        printf("Erro: Telefone ja existe.\n");
+        return;
+    }
+
     agenda->contatos[agenda->quantidade_contatos] = novo_contato;
     agenda->quantidade_contatos++;
 }
@@ -36,7 +50,7 @@ void listar_contatos(Agenda *agenda) {
 }
 
 void deletar_contato(Agenda *agenda) {
-    char telefone_deletar[20];
+    char telefone_deletar[MAX_TELEFONE];
     printf("Digite o telefone do contato que deseja deletar: ");
     scanf("%s", telefone_deletar);
 
