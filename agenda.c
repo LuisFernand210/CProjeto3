@@ -91,3 +91,60 @@ void carregar_agenda(Agenda *agenda) {
 
     fclose(arquivo);
 }
+
+void alterar_contato(Agenda *agenda) {
+    char email_busca[MAX_EMAIL];
+    printf("Digite o email do contato que deseja alterar: ");
+    scanf("%s", email_busca);
+
+    for (int i = 0; i < agenda->quantidade_contatos; i++) {
+        if (strcmp(agenda->contatos[i].email, email_busca) == 0) {
+            int opcao;
+            do {
+                printf("\n===== Alterar Contato =====\n");
+                printf("1. Mudar nome\n");
+                printf("2. Mudar sobrenome\n");
+                printf("3. Mudar email\n");
+                printf("4. Mudar telefone\n");
+                printf("0. Voltar\n");
+                printf("Escolha uma opcao: ");
+                scanf("%d", &opcao);
+
+                switch (opcao) {
+                    case 1:
+                        printf("Novo nome: ");
+                        scanf("%s", agenda->contatos[i].nome);
+                        break;
+                    case 2:
+                        printf("Novo sobrenome: ");
+                        scanf("%s", agenda->contatos[i].sobrenome);
+                        break;
+                    case 3:
+                        printf("Novo email: ");
+                        scanf("%s", agenda->contatos[i].email);
+                        break;
+                    case 4:
+                        {
+                            char novo_telefone[MAX_TELEFONE];
+                            printf("Novo telefone: ");
+                            scanf("%s", novo_telefone);
+                            if (telefone_existe(agenda, novo_telefone)) {
+                                printf("Erro: Telefone ja existe.\n");
+                            } else {
+                                strcpy(agenda->contatos[i].telefone, novo_telefone);
+                            }
+                        }
+                        break;
+                    case 0:
+                        printf("Voltando ao menu principal...\n");
+                        break;
+                    default:
+                        printf("Opcao invalida!\n");
+                }
+            } while (opcao != 0);
+            return;
+        }
+    }
+
+    printf("Contato com email %s nao encontrado.\n", email_busca);
+}
