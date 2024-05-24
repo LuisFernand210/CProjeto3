@@ -4,20 +4,31 @@
 #include "agenda.h"
 
 void inicializar_agenda(Agenda *agenda) {
-    agenda->quantidade_contatos = 0;
+    agenda->quantidade_contatos_pessoais = 0;
+    agenda->quantidade_contatos_trabalho = 0;
 }
 
-int telefone_existe(Agenda *agenda, const char *telefone) {
-    for (int i = 0; i < agenda->quantidade_contatos; i++) {
-        if (strcmp(agenda->contatos[i].telefone, telefone) == 0) {
+int telefone_existe(Contato *contatos, int quantidade, const char *telefone) {
+    for (int i = 0; i < quantidade; i++) {
+        if (strcmp(contatos[i].telefone, telefone) == 0) {
             return 1; // Telefone já existe
         }
     }
     return 0; // Telefone não existe
 }
 
-void adicionar_contato(Agenda *agenda) {
-    if (agenda->quantidade_contatos >= MAX_CONTATOS) {
+void adicionar_contato(Agenda *agenda, int tipo) {
+    Contato *contatos;
+    int *quantidade_contatos;
+    if (tipo == 1) { // Contato pessoal
+        contatos = agenda->contatos_pessoais;
+        quantidade_contatos = &agenda->quantidade_contatos_pessoais;
+    } else { // Contato de trabalho
+        contatos = agenda->contatos_trabalho;
+        quantidade_contatos = &agenda->quantidade_contatos_trabalho;
+    }
+
+    if (*quantidade_contatos >= MAX_CONTATOS) {
         printf("Nao e possivel adicionar mais contatos. Agenda cheia.\n");
         return;
     }
@@ -32,34 +43,54 @@ void adicionar_contato(Agenda *agenda) {
     printf("Telefone: ");
     scanf("%s", novo_contato.telefone);
 
-    if (telefone_existe(agenda, novo_contato.telefone)) {
+    if (telefone_existe(contatos, *quantidade_contatos, novo_contato.telefone)) {
         printf("Erro: Telefone ja existe.\n");
         return;
     }
 
-    agenda->contatos[agenda->quantidade_contatos] = novo_contato;
-    agenda->quantidade_contatos++;
+    contatos[*quantidade_contatos] = novo_contato;
+    (*quantidade_contatos)++;
 }
 
-void listar_contatos(Agenda *agenda) {
+void listar_contatos(Agenda *agenda, int tipo) {
+    Contato *contatos;
+    int quantidade_contatos;
+    if (tipo == 1) { // Contatos pessoais
+        contatos = agenda->contatos_pessoais;
+        quantidade_contatos = agenda->quantidade_contatos_pessoais;
+    } else { // Contatos de trabalho
+        contatos = agenda->contatos_trabalho;
+        quantidade_contatos = agenda->quantidade_contatos_trabalho;
+    }
+
     printf("\n===== Contatos =====\n");
-    for (int i = 0; i < agenda->quantidade_contatos; i++) {
-        Contato contato = agenda->contatos[i];
+    for (int i = 0; i < quantidade_contatos; i++) {
+        Contato contato = contatos[i];
         printf("%d. %s %s, %s, %s\n", i + 1, contato.nome, contato.sobrenome, contato.email, contato.telefone);
     }
 }
 
-void deletar_contato(Agenda *agenda) {
+void deletar_contato(Agenda *agenda, int tipo) {
+    Contato *contatos;
+    int *quantidade_contatos;
+    if (tipo == 1) { // Contato pessoal
+        contatos = agenda->contatos_pessoais;
+        quantidade_contatos = &agenda->quantidade_contatos_pessoais;
+    } else { // Contato de trabalho
+        contatos = agenda->contatos_trabalho;
+        quantidade_contatos = &agenda->quantidade_contatos_trabalho;
+    }
+
     char telefone_deletar[MAX_TELEFONE];
     printf("Digite o telefone do contato que deseja deletar: ");
     scanf("%s", telefone_deletar);
 
-    for (int i = 0; i < agenda->quantidade_contatos; i++) {
-        if (strcmp(agenda->contatos[i].telefone, telefone_deletar) == 0) {
-            for (int j = i; j < agenda->quantidade_contatos - 1; j++) {
-                agenda->contatos[j] = agenda->contatos[j + 1];
+    for (int i = 0; i < *quantidade_contatos; i++) {
+        if (strcmp(contatos[i].telefone, telefone_deletar) == 0) {
+            for (int j = i; j < *quantidade_contatos - 1; j++) {
+                contatos[j] = contatos[j + 1];
             }
-            agenda->quantidade_contatos--;
+            (*quantidade_contatos)--;
             printf("Contato deletado com sucesso.\n");
             return;
         }
@@ -92,13 +123,23 @@ void carregar_agenda(Agenda *agenda) {
     fclose(arquivo);
 }
 
-void alterar_contato(Agenda *agenda) {
+void alterar_contato(Agenda *agenda, int tipo) {
+    Contato *contatos;
+    int quantidade_contatos;
+    if (tipo == 1) { // Contato pessoal
+        contatos = agenda->contatos_pessoais;
+        quantidade_contatos = agenda->quantidade_contatos_pessoais;
+    } else { // Contato de trabalho
+        contatos = agenda->contatos_trabalho;
+        quantidade_contatos = agenda->quantidade_contatos_trabalho;
+    }
+
     char email_busca[MAX_EMAIL];
     printf("Digite o email do contato que deseja alterar: ");
     scanf("%s", email_busca);
 
-    for (int i = 0; i < agenda->quantidade_contatos; i++) {
-        if (strcmp(agenda->contatos[i].email, email_busca) == 0) {
+    for (int i = 0; i < quantidade_contatos; i++) {
+        if (strcmp(contatos[i].email, email_busca) == 0) {
             int opcao;
             do {
                 printf("\n===== Alterar Contato =====\n");
@@ -113,25 +154,25 @@ void alterar_contato(Agenda *agenda) {
                 switch (opcao) {
                     case 1:
                         printf("Novo nome: ");
-                        scanf("%s", agenda->contatos[i].nome);
+                        scanf("%s", contatos[i].nome);
                         break;
                     case 2:
                         printf("Novo sobrenome: ");
-                        scanf("%s", agenda->contatos[i].sobrenome);
+                        scanf("%s", contatos[i].sobrenome);
                         break;
                     case 3:
                         printf("Novo email: ");
-                        scanf("%s", agenda->contatos[i].email);
+                        scanf("%s", contatos[i].email);
                         break;
                     case 4:
                         {
                             char novo_telefone[MAX_TELEFONE];
                             printf("Novo telefone: ");
                             scanf("%s", novo_telefone);
-                            if (telefone_existe(agenda, novo_telefone)) {
+                            if (telefone_existe(contatos, quantidade_contatos, novo_telefone)) {
                                 printf("Erro: Telefone ja existe.\n");
                             } else {
-                                strcpy(agenda->contatos[i].telefone, novo_telefone);
+                                strcpy(contatos[i].telefone, novo_telefone);
                             }
                         }
                         break;
