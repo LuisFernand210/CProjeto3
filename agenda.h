@@ -14,17 +14,19 @@ typedef struct {
 } Contato;
 
 typedef struct {
-    Contato contatos[MAX_CONTATOS];
-    int quantidade_contatos;
+    Contato contatos_pessoais[MAX_CONTATOS];
+    int quantidade_contatos_pessoais;
+    Contato contatos_trabalho[MAX_CONTATOS];
+    int quantidade_contatos_trabalho;
 } Agenda;
 
 void inicializar_agenda(Agenda *agenda);
-void adicionar_contato(Agenda *agenda);
-void listar_contatos(Agenda *agenda);
-void deletar_contato(Agenda *agenda);
+void adicionar_contato(Agenda *agenda, int tipo);
+void listar_contatos(Agenda *agenda, int tipo);
+void deletar_contato(Agenda *agenda, int tipo);
 void salvar_agenda(Agenda *agenda);
 void carregar_agenda(Agenda *agenda);
-int telefone_existe(Agenda *agenda, const char *telefone);
-void alterar_contato(Agenda *agenda);
+int telefone_existe(Contato *contatos, int quantidade, const char *telefone);
+void alterar_contato(Agenda *agenda, int tipo);
 
 #endif
