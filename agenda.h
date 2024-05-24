@@ -24,5 +24,7 @@ void listar_contatos(Agenda *agenda);
 void deletar_contato(Agenda *agenda);
 void salvar_agenda(Agenda *agenda);
 void carregar_agenda(Agenda *agenda);
+int telefone_existe(Agenda *agenda, const char *telefone);
+void alterar_contato(Agenda *agenda);
 
-#endif 
+#endif
