@@ -5,7 +5,7 @@
 int main() {
     int opcao;
     Agenda agenda;
-    inicializar_agenda(&agenda); 
+    inicializar_agenda(&agenda);
 
     do {
         printf("\n===== Menu =====\n");
@@ -14,6 +14,7 @@ int main() {
         printf("3. Deletar contato\n");
         printf("4. Salvar agenda\n");
         printf("5. Carregar agenda\n");
+        printf("6. Alterar contato\n");
         printf("0. Sair\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
@@ -33,6 +34,9 @@ int main() {
                 break;
             case 5:
                 carregar_agenda(&agenda);
+                break;
+            case 6:
+                alterar_contato(&agenda);
                 break;
             case 0:
                 printf("Saindo...\n");
